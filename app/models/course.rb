@@ -1,6 +1,7 @@
 class Course < ApplicationRecord
-  has_many :divisions
+  belongs_to :school
+  has_many :divisions, dependent: :destroy
 
   validates :name, presence: true
-  validates :prosition, numericality: true
+  validates :position, numericality: true
 end

@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_22_014321) do
+ActiveRecord::Schema.define(version: 2020_12_22_103553) do
+
+  create_table "attendances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.date "day"
+    t.bigint "membership_id"
+    t.string "kind"
+    t.text "comment"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["day", "kind"], name: "index_attendances_on_day_and_kind"
+    t.index ["membership_id"], name: "index_attendances_on_membership_id"
+  end
 
   create_table "courses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
@@ -33,6 +44,34 @@ ActiveRecord::Schema.define(version: 2020_12_22_014321) do
   create_table "dummies", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "memberships", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.integer "year", null: false
+    t.bigint "student_id", null: false
+    t.bigint "division_id", null: false
+    t.string "status", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["division_id"], name: "index_memberships_on_division_id"
+    t.index ["student_id"], name: "index_memberships_on_student_id"
+    t.index ["year", "student_id", "division_id"], name: "index_memberships_on_year_and_student_id_and_division_id", unique: true
+  end
+
+  create_table "operations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "school_id"
+    t.string "class_name", null: false
+    t.integer "object_id", null: false
+    t.integer "code", null: false
+    t.string "resource_type", null: false
+    t.integer "resource_id", null: false
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["object_id"], name: "index_operations_on_object_id"
+    t.index ["school_id"], name: "index_operations_on_school_id"
+    t.index ["user_id"], name: "index_operations_on_user_id"
   end
 
   create_table "schools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -95,6 +134,11 @@ ActiveRecord::Schema.define(version: 2020_12_22_014321) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "attendances", "memberships"
   add_foreign_key "divisions", "courses"
+  add_foreign_key "memberships", "divisions"
+  add_foreign_key "memberships", "students"
+  add_foreign_key "operations", "schools"
+  add_foreign_key "operations", "users"
   add_foreign_key "schools", "users"
 end
